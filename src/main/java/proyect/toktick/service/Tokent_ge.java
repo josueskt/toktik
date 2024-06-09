@@ -27,7 +27,7 @@ public class Tokent_ge {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-            
+            System.out.println( claims);
             return claims.getSubject();
         } catch (Exception e) {
             System.err.println("Error al obtener el sujeto del token: " + e.getMessage());
@@ -39,11 +39,11 @@ public class Tokent_ge {
 
 
 
-    public String generarToken(String sujeto, long duracionMilisegundos) {
+    public String generarToken(String sujeto,long duracionMilisegundos) {
         long ahoraMillis = System.currentTimeMillis();
         Date ahora = new Date(ahoraMillis);
         Date fechaExpiracion = new Date(ahoraMillis + duracionMilisegundos);
-
+    
         return Jwts.builder()
                 .setSubject(sujeto)
                 .setIssuedAt(ahora)
@@ -51,7 +51,6 @@ public class Tokent_ge {
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-
     public boolean validarToken(String token) {
         try {
             Claims claims = Jwts.parserBuilder()

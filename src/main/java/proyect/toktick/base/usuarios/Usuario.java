@@ -13,7 +13,6 @@ import jakarta.persistence.Column;
 @Data
 public class Usuario {
     @Id
-   
     @Column(name = "correo", length = 200)
     private String correo;
 

@@ -60,7 +60,8 @@ public class MediaController {
 
         Usuario usuario = new Usuario();
         usuario.setCorreo(tokent_ge.obtenerSujetoDesdeToken(token));
-
+       System.out.println("usuario"+ tokent_ge.obtenerSujetoDesdeToken(token));
+        System.out.println(usuario);
         // Crear un objeto Video a partir de los datos del JSON
         Video video = new Video();
         video.setTitulo(jsonvideo.optString("titulo")); // Ajusta este método según la estructura de tu JSON

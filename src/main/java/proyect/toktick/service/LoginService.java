@@ -1,6 +1,8 @@
 package proyect.toktick.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import proyect.toktick.base.usuarios.Secion;
@@ -10,6 +12,7 @@ import proyect.toktick.repository.Usuaruirepository;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 @Service
 public class LoginService {
@@ -21,7 +24,7 @@ public class LoginService {
     @Autowired
     Secionrepository secionrepository;
 
-    public String logear(String correo, String pass) {
+    public ResponseEntity<?> logear(String correo, String pass) {
         // Buscamos al usuario por su correo electrónico en la base de datos
         Usuario usuario = usuaruirepository.findByCorreo(correo);
 
@@ -36,16 +39,19 @@ public class LoginService {
                     Secion secion = new Secion();
                     secion.setUsuario(usuario);
                     secionrepository.save(secion);
-                    return tookent_ge.generarToken(usuario.getCorreo(),30000000 );
+                   
+                    return ResponseEntity.ok( tookent_ge.generarToken(usuario.getCorreo(),30000000 ));
                 } else {
-                    return "contraseña incorrecta ";
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "contraseña incorrecta"));
+
                 }
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
                 return null;
             }
         } else {
-            return "ususario no existente ";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "usuario no existente"));
+
         }
     }
     private String hashPassword(String password) throws NoSuchAlgorithmException {

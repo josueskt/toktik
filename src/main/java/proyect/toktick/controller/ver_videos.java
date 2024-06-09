@@ -38,7 +38,7 @@ Tokent_ge tokent_ge;
     }
 
     @GetMapping("/{id_file:.+}")
-    public ResponseEntity<Resource> getVideo(@PathVariable String id_file , @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<Resource> getVideo(@PathVariable String id_file ) {
 
         Optional<Video> vide =   videorepository.findById(Long.parseLong( id_file));
 
@@ -51,15 +51,15 @@ Tokent_ge tokent_ge;
 
 
         
-        if(token != null){
+        // if(token != null){
             
-            boolean asd = tokent_ge.validarToken(token);
-            if(!asd){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        //     boolean asd = tokent_ge.validarToken(token);
+        //     if(!asd){
+        //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
                 
-            }
+        //     }
             
-        }
+        // }
             try {
 
                
