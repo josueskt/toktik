@@ -6,6 +6,7 @@ import proyect.toktick.base.usuarios.Usuario;
 import proyect.toktick.service.RegisterService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class Register {
 @Autowired
 RegisterService registerService;
-
+@CrossOrigin("*")
    @PostMapping("/register")
    public String Register_user(@RequestBody Usuario entity) {
        
