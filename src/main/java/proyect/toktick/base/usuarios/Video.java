@@ -35,7 +35,7 @@ public class Video {
     private java.sql.Timestamp fecha_pl;
 
     @ManyToOne
-    @JoinColumn(name = "fk_usuario")
+    @JoinColumn(name = "fk_usuario",referencedColumnName = "correo")
     private Usuario usuario;
 
         
