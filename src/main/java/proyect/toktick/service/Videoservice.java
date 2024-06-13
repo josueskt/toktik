@@ -29,6 +29,11 @@ vistareposiroty.save(vista);
 
 }
 
+public void eliminar(Long id ){
+
+    videorepository.deleteById(id);
+}
+
 
 
 

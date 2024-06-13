@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,7 @@ import proyect.toktick.service.SubirService;
 import proyect.toktick.service.Tokent_ge;
 import proyect.toktick.service.Videoservice;
 
+
 @RestController
 @RequestMapping("/media")
 @CrossOrigin("*")
@@ -39,6 +41,12 @@ public class MediaController {
     private Tokent_ge tokent_ge;
     @Autowired
     Videoservice videoservice;
+@DeleteMapping("/{id}")
+public ResponseEntity<?> putMethodName(@PathVariable Long id) {
+    
+    videoservice.eliminar(id);
+    return ResponseEntity.ok("eliminado");
+}
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadVideo(
@@ -46,7 +54,7 @@ public class MediaController {
             HttpServletRequest request,
             @RequestParam("vid") String metadataJson,
             @RequestHeader(name = "Authorization") String token) throws IOException {
-
+System.out.println("usuario :"+token);
         if (token != null) {
 
             boolean asd = tokent_ge.validarToken(token);

@@ -11,7 +11,7 @@ import proyect.toktick.base.usuarios.Video;
 public interface Videorepository extends CrudRepository<Video,Long>   {
 
 
- //List<Video> findByUsuarioCorreo(Long usuarioId);
+    List<Video> findByUsuarioCorreo(String correo);
     
     
 }

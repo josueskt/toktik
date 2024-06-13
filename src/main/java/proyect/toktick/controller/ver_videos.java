@@ -20,6 +20,7 @@ import proyect.toktick.base.usuarios.Video;
 import proyect.toktick.repository.Videorepository;
 import proyect.toktick.service.Tokent_ge;
 
+
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/videos")
@@ -38,6 +39,18 @@ Tokent_ge tokent_ge;
         return videorepository.findAll();
 
     }
+    @GetMapping("/usuario")
+    public ResponseEntity<?> getMethodName( @RequestHeader(name = "Authorization") String token) {
+       String user = tokent_ge.obtenerSujetoDesdeToken(token);
+       if(user != null){
+        
+           return ResponseEntity.ok( videorepository.findByUsuarioCorreo(user));
+       }else{
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("eror");
+
+       }
+    }
+    
     @CrossOrigin("*")
     @GetMapping("/{id_file:.+}")
     public ResponseEntity<Resource> getVideo(@PathVariable String id_file ) {
