@@ -23,6 +23,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import proyect.toktick.base.usuarios.Usuario;
 import proyect.toktick.base.usuarios.Video;
@@ -30,63 +35,76 @@ import proyect.toktick.service.SubirService;
 import proyect.toktick.service.Tokent_ge;
 import proyect.toktick.service.Videoservice;
 
-
 @RestController
 @RequestMapping("/media")
 @CrossOrigin("*")
+@Api(value = "Media Management System", description = "Operations pertaining to media management in the application")
 public class MediaController {
     @Autowired
     private SubirService subirService;
+
     @Autowired
     private Tokent_ge tokent_ge;
+
     @Autowired
     Videoservice videoservice;
-@DeleteMapping("/{id}")
-public ResponseEntity<?> putMethodName(@PathVariable Long id) {
-    
-    videoservice.eliminar(id);
-    return ResponseEntity.ok("eliminado");
-}
 
+    @ApiOperation(value = "Delete a video by ID")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully deleted video"),
+        @ApiResponse(code = 404, message = "The video was not found")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteVideo(@ApiParam(value = "ID of the video to be deleted", required = true) @PathVariable Long id) {
+        videoservice.eliminar(id);
+        return ResponseEntity.ok("eliminado");
+    }
+
+    @ApiOperation(value = "Upload a video")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully uploaded video"),
+        @ApiResponse(code = 401, message = "Unauthorized to upload video"),
+        @ApiResponse(code = 400, message = "Bad request")
+    })
     @PostMapping("/upload")
     public ResponseEntity<String> uploadVideo(
-            @RequestParam("file") MultipartFile multipartFile,
+            @ApiParam(value = "Video file to upload", required = true) @RequestParam("file") MultipartFile multipartFile,
             HttpServletRequest request,
-            @RequestParam("vid") String metadataJson,
-            @RequestHeader(name = "Authorization") String token) throws IOException {
-System.out.println("usuario :"+token);
+            @ApiParam(value = "Metadata JSON", required = true) @RequestParam("vid") String metadataJson,
+            @ApiParam(value = "Authorization token", required = true) @RequestHeader(name = "Authorization") String token) throws IOException {
+        
         if (token != null) {
-
-            boolean asd = tokent_ge.validarToken(token);
-
-            if (!asd) {
+            boolean validToken = tokent_ge.validarToken(token);
+            if (!validToken) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-
             }
-
         }
+
         JSONObject jsonvideo = new JSONObject(metadataJson);
         jsonvideo.put("archivo", subirService.video(multipartFile));
 
         Usuario usuario = new Usuario();
         usuario.setCorreo(tokent_ge.obtenerSujetoDesdeToken(token));
-       System.out.println("usuario"+ tokent_ge.obtenerSujetoDesdeToken(token));
-        System.out.println(usuario);
-        // Crear un objeto Video a partir de los datos del JSON
+        
         Video video = new Video();
-        video.setTitulo(jsonvideo.optString("titulo")); // Ajusta este método según la estructura de tu JSON
-        video.setDescription(jsonvideo.optString("description")); // Ajusta este método según la estructura de tu JSON
-        video.setArchivo(jsonvideo.optString("archivo")); // Ajusta este método según la estructura de tu JSON
-
+        video.setTitulo(jsonvideo.optString("titulo"));
+        video.setDescription(jsonvideo.optString("description"));
+        video.setArchivo(jsonvideo.optString("archivo"));
         video.setUsuario(usuario);
 
         videoservice.crear_diceo(video);
 
         return ResponseEntity.ok("archivo creado");
     }
-    @CrossOrigin("*")
+
+    @ApiOperation(value = "Get a video by filename")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully retrieved video"),
+        @ApiResponse(code = 404, message = "The video was not found"),
+        @ApiResponse(code = 500, message = "Internal server error")
+    })
     @GetMapping("/{filename}")
-    public void getVideo(@PathVariable String filename, HttpServletResponse response) throws IOException {
+    public void getVideo(@ApiParam(value = "Filename of the video to retrieve", required = true) @PathVariable String filename, HttpServletResponse response) throws IOException {
         Resource resource = subirService.LoadAsResource(filename);
 
         if (resource.exists() || resource.isReadable()) {
@@ -99,5 +117,4 @@ System.out.println("usuario :"+token);
             response.sendError(HttpStatus.NOT_FOUND.value(), "Video not found");
         }
     }
-
 }
