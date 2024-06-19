@@ -2,6 +2,7 @@ package proyect.toktick.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,6 +35,9 @@ import proyect.toktick.base.usuarios.Video;
 import proyect.toktick.service.SubirService;
 import proyect.toktick.service.Tokent_ge;
 import proyect.toktick.service.Videoservice;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/media")
@@ -117,4 +121,23 @@ public class MediaController {
             response.sendError(HttpStatus.NOT_FOUND.value(), "Video not found");
         }
     }
+    @CrossOrigin("*")
+    @PutMapping("/edit")
+    public  ResponseEntity<?> putMethodName( @RequestBody Video entity) {
+        
+        videoservice.editar(entity);
+        return ResponseEntity.ok("video actualizado");
+        
+        
+    }
+    @GetMapping("/by/{id}")
+    public ResponseEntity<Video> getVideoById(@PathVariable Long id) {
+        Optional<Video> video = videoservice.byid(id);
+        if (video.isPresent()) {
+            return ResponseEntity.ok(video.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
 }
